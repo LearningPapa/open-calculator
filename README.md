@@ -21,26 +21,42 @@ Pre-built portable binaries are available on the [Releases](../../releases) page
 | macOS Apple Silicon | `OpenCalculator-osx-arm64` | ~80 MB |
 | macOS Intel | `OpenCalculator-osx-x64` | ~80 MB |
 
+### Windows first run
+
+The binary is unsigned, so Windows SmartScreen will block it on first launch with a "Windows protected your PC" dialog.
+
+1. Click **More info**
+2. Click **Run anyway**
+
+This is a one-time prompt — Windows will remember your choice for that file. If you don't see the **More info** option, your organization may have disabled the bypass; in that case build from source instead (instructions below).
+
 ### Linux first run
+
 ```bash
 chmod +x OpenCalculator-linux-x64
 ./OpenCalculator-linux-x64
 ```
 
 ### macOS first run
-macOS will block unsigned binaries by default. Right-click the file → Open → confirm. Or from terminal:
+
+macOS will block unsigned binaries by default. Right-click the file → **Open** → confirm the security prompt. Or from terminal:
+
 ```bash
 chmod +x OpenCalculator-osx-arm64
 xattr -d com.apple.quarantine OpenCalculator-osx-arm64
 ./OpenCalculator-osx-arm64
 ```
 
+### Why aren't the binaries signed?
+
+Code signing certificates cost $100–500/year per platform and are tied to a verified identity. For a free open-source project this isn't worth the overhead — the source code is fully public so anyone can verify or rebuild it themselves. The OS warnings are real safety features, but in this case they're warning you about the absence of a paid certificate, not anything malicious.
+
 ## Building from source
 
 You'll need [.NET 10 SDK](https://dotnet.microsoft.com/download) (or newer) and any code editor.
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/open-calculator.git
+git clone https://github.com/LearningPapa/open-calculator.git
 cd open-calculator
 dotnet restore
 dotnet run
@@ -57,6 +73,8 @@ That's it. To build portable binaries for all platforms, run:
 ```
 
 Output goes to `./publish/` — one self-contained binary per platform.
+
+> **Windows PowerShell tip:** if `./build.ps1` fails with "cannot be loaded… not digitally signed", run it as `powershell -ExecutionPolicy Bypass -File ./build.ps1` for a one-time bypass, or set the policy permanently with `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser` from an Administrator PowerShell.
 
 ## Tech stack
 
