@@ -28,18 +28,33 @@ namespace ScientificCalculator
         private float _zMin, _zMax;
         private float _range = 5f;
 
-        // Zoom: multiplier on camera distance.
-        // 1.0 = default, <1 = zoomed in, >1 = zoomed out.
-        // Clamped to 0.2–5.0 so you can't zoom through the surface or to infinity.
         private float _zoom = 1.0f;
-        private const float ZoomMin = 0.2f;
-        private const float ZoomMax = 5.0f;
-        private const float ZoomStep = 0.12f; // per scroll tick
+        private const float ZoomMin  = 0.2f;
+        private const float ZoomMax  = 5.0f;
+        private const float ZoomStep = 0.12f;
 
         // ── Shaders ───────────────────────────────────────────────────────────
+        //
+        // GLSL 1.50 (#version 150) targets desktop OpenGL 3.2 core profile.
+        // This is the lowest common denominator that works across:
+        //   - Windows: ANGLE translates GL → Direct3D
+        //   - Linux:   Mesa native
+        //   - macOS:   Apple's deprecated-but-still-present OpenGL 4.1 stack
+        //
+        // We previously used #version 300 es (GLES 3.0) which works on Windows
+        // (via ANGLE's GLES path) and Linux but NOT macOS — Apple never shipped
+        // OpenGL ES on the desktop.
+        //
+        // Differences vs the GLES variant:
+        //   - No "precision highp float;" (GLES-only directive)
+        //   - in/out semantics are otherwise identical
+        //   - User-defined fragment outputs require #version 130+, we have 150
+        //
+        // Attribute locations are still bound via glBindAttribLocation before
+        // linking (see OnOpenGlInit) which works in 1.50. We avoid layout(location=N)
+        // because that requires GLSL 330+.
 
-        private const string VertSrc = @"#version 300 es
-precision highp float;
+        private const string VertSrc = @"#version 150
 
 in vec3 aPosition;
 in vec3 aNormal;
@@ -57,8 +72,7 @@ void main()
 }
 ";
 
-        private const string FragSrc = @"#version 300 es
-precision highp float;
+        private const string FragSrc = @"#version 150
 
 in  vec3  vNormal;
 in  float vZ;
@@ -98,11 +112,6 @@ void main()
             RequestNextFrameRendering();
         }
 
-        /// <summary>
-        /// Adjusts zoom by delta scroll ticks.
-        /// Positive delta = scroll up = zoom in (camera moves closer).
-        /// Negative delta = scroll down = zoom out (camera moves further).
-        /// </summary>
         public void AdjustZoom(float delta)
         {
             _zoom = Math.Clamp(_zoom - delta * ZoomStep, ZoomMin, ZoomMax);
@@ -123,7 +132,7 @@ void main()
             _zMin   = zMin;
             _zMax   = zMax;
             _range  = range;
-            _zoom   = 1.0f; // reset zoom on new plot
+            _zoom   = 1.0f;
             _meshDirty = true;
             RequestNextFrameRendering();
         }
@@ -291,18 +300,13 @@ void main()
             return s;
         }
 
-        // ── MVP — zoom is applied to camera distance ──────────────────────────
-        //
-        // Zoom moves the camera closer/further along the view ray.
-        // This is more natural than scaling the model because the perspective
-        // projection changes correctly (near objects look bigger, parallax shifts)
-        // rather than just uniformly scaling a flat image.
+        // ── MVP — zoom on camera distance ─────────────────────────────────────
 
         private float[] BuildMVP(float aspect)
         {
             float az   = _azimuth   * MathF.PI / 180f;
             float el   = _elevation * MathF.PI / 180f;
-            float dist = _range * 2.8f * _zoom; // zoom scales camera distance
+            float dist = _range * 2.8f * _zoom;
 
             float midZ = (_zMin + _zMax) * 0.5f;
             float ex   = dist * MathF.Cos(el) * MathF.Cos(az);

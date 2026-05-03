@@ -11,8 +11,42 @@ namespace ScientificCalculator
 {
     public partial class MainWindow : Avalonia.Controls.Window
     {
-        private bool   _newEntry   = true;
-        private string historyFile = "history.txt";
+        private bool _newEntry = true;
+
+        // ── History file location ─────────────────────────────────────────────
+        //
+        // We store history in the OS-standard "user application data" folder.
+        // SpecialFolder.ApplicationData maps to:
+        //   Windows: %APPDATA%                  → C:\Users\X\AppData\Roaming
+        //   macOS:   ~/Library/Application Support
+        //   Linux:   ~/.config (XDG_CONFIG_HOME)
+        //
+        // This is always writable for the current user and is where users expect
+        // app data to live. Previously we wrote history.txt to the current working
+        // directory which depended on where the binary was launched from — this
+        // failed silently on macOS and Linux when launched from Finder/Files
+        // because the CWD might be a read-only system path.
+        private static readonly string HistoryFile = ResolveHistoryFile();
+
+        private static string ResolveHistoryFile()
+        {
+            string baseDir = Environment.GetFolderPath(
+                Environment.SpecialFolder.ApplicationData);
+            string appDir  = Path.Combine(baseDir, "OpenCalculator");
+            try
+            {
+                Directory.CreateDirectory(appDir);
+            }
+            catch (Exception ex)
+            {
+                // If we can't create the standard folder for any reason
+                // (corp lockdown, weird sandbox, etc.), fall back to the user's
+                // home folder which is always writable.
+                Console.Error.WriteLine($"[OpenCalculator] Could not create {appDir}: {ex.Message}");
+                appDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            }
+            return Path.Combine(appDir, "history.txt");
+        }
 
         private double[,]? _cachedZ;
         private const int   MeshRes   = 60;
@@ -31,9 +65,9 @@ namespace ScientificCalculator
             LoadHistory();
             this.AddHandler(KeyDownEvent, Window_KeyDown, handledEventsToo: true);
 
-            Plot3D.PointerPressed     += Plot3D_PointerPressed;
-            Plot3D.PointerMoved       += Plot3D_PointerMoved;
-            Plot3D.PointerReleased    += Plot3D_PointerReleased;
+            Plot3D.PointerPressed      += Plot3D_PointerPressed;
+            Plot3D.PointerMoved        += Plot3D_PointerMoved;
+            Plot3D.PointerReleased     += Plot3D_PointerReleased;
             Plot3D.PointerWheelChanged += Plot3D_WheelChanged;
         }
 
@@ -45,14 +79,33 @@ namespace ScientificCalculator
             AvaPlot2D.Refresh();
         }
 
+        // ── History ───────────────────────────────────────────────────────────
+        // Reads/writes are wrapped in try/catch so a file system error never
+        // crashes the app — at worst we lose history persistence for that run.
+
         private void LoadHistory()
         {
-            if (File.Exists(historyFile)) HistoryBox.Text = File.ReadAllText(historyFile);
+            try
+            {
+                if (File.Exists(HistoryFile))
+                    HistoryBox.Text = File.ReadAllText(HistoryFile);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"[OpenCalculator] Could not load history: {ex.Message}");
+            }
         }
 
         private void Window_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
-            File.WriteAllText(historyFile, HistoryBox.Text ?? "");
+            try
+            {
+                File.WriteAllText(HistoryFile, HistoryBox.Text ?? "");
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"[OpenCalculator] Could not save history: {ex.Message}");
+            }
         }
 
         private void AddHistory(string entry)
@@ -63,6 +116,8 @@ namespace ScientificCalculator
 
         private void ClearHistory_Click(object? sender, RoutedEventArgs e) => HistoryBox.Text = "";
 
+        // ── Help Overlays ─────────────────────────────────────────────────────
+
         private void ToggleHelp2D_Click(object? sender, RoutedEventArgs e) =>
             Help2DOverlay.IsVisible = !Help2DOverlay.IsVisible;
 
@@ -70,6 +125,8 @@ namespace ScientificCalculator
             Help3DOverlay.IsVisible = !Help3DOverlay.IsVisible;
 
         private void ShowError(string message) { Display.Text = message; _newEntry = true; }
+
+        // ── Equation normalization ────────────────────────────────────────────
 
         private string NormalizeEquation(string input)
         {
@@ -86,6 +143,8 @@ namespace ScientificCalculator
             return p;
         }
 
+        // ── Text insertion ────────────────────────────────────────────────────
+
         private void InsertText(string text)
         {
             if (_newEntry) { Display.Text = text; _newEntry = false; }
@@ -99,6 +158,8 @@ namespace ScientificCalculator
             }
             Display.Focus();
         }
+
+        // ── Calculator handlers ───────────────────────────────────────────────
 
         private void Num_Click(object? sender, RoutedEventArgs e) =>
             InsertText((sender as Button)?.Content?.ToString() ?? "");
@@ -245,8 +306,6 @@ namespace ScientificCalculator
             Plot3D.ClearMesh();
         }
 
-        // ── Mesh builder ──────────────────────────────────────────────────────
-
         private static (float[] verts, uint[] indices, float zMin, float zMax)
             BuildMesh(double[,] z, int res, float range)
         {
@@ -365,13 +424,8 @@ namespace ScientificCalculator
             }
         }
 
-        /// <summary>
-        /// Scroll wheel: zoom in/out.
-        /// Double-click (left button): reset zoom to default.
-        /// </summary>
         private void Plot3D_WheelChanged(object? sender, PointerWheelEventArgs e)
         {
-            // Delta.Y is positive scrolling up (zoom in), negative scrolling down (zoom out)
             Plot3D.AdjustZoom((float)e.Delta.Y);
             e.Handled = true;
         }
@@ -379,7 +433,6 @@ namespace ScientificCalculator
         protected override void OnPointerPressed(PointerPressedEventArgs e)
         {
             base.OnPointerPressed(e);
-            // Double-click on the plot resets zoom
             if (e.ClickCount == 2 &&
                 e.GetCurrentPoint(Plot3D).Properties.IsLeftButtonPressed)
             {
