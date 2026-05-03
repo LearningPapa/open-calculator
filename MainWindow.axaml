@@ -1,0 +1,320 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ScottPlot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
+        xmlns:local="clr-namespace:ScientificCalculator"
+        x:Class="ScientificCalculator.MainWindow"
+        Title="Open Calculator"
+        Width="480" Height="900"
+        CanResize="True"
+        Background="#1E1E2E">
+
+    <Window.Styles>
+        <Style Selector="TabItem">
+            <Setter Property="Background"  Value="#313244"/>
+            <Setter Property="Foreground"  Value="White"/>
+            <Setter Property="Padding"     Value="12,8"/>
+            <Setter Property="Margin"      Value="2"/>
+            <Setter Property="FontWeight"  Value="SemiBold"/>
+            <Setter Property="FontSize"    Value="12"/>
+        </Style>
+        <Style Selector="TabItem:selected">
+            <Setter Property="Background" Value="#89B4FA"/>
+            <Setter Property="Foreground" Value="#1E1E2E"/>
+        </Style>
+        <Style Selector="TabControl">
+            <Setter Property="Background"      Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style Selector="Slider">
+            <Setter Property="Foreground" Value="#89B4FA"/>
+        </Style>
+        <Style Selector="TextBlock.SliderLabel">
+            <Setter Property="Foreground" Value="#6C7086"/>
+            <Setter Property="FontSize"   Value="11"/>
+        </Style>
+    </Window.Styles>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="120"/>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="#313244" CornerRadius="8" Margin="0,0,0,8">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0" Margin="5,5,5,2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="HISTORY"
+                               Foreground="#6C7086" FontSize="10"
+                               FontWeight="Bold" VerticalAlignment="Center"/>
+                    <Button Grid.Column="1" Content="CLEAR"
+                            Click="ClearHistory_Click"
+                            FontSize="10" Padding="6,2"
+                            Background="#F38BA8" Foreground="#1E1E2E"
+                            CornerRadius="4"/>
+                </Grid>
+                <ScrollViewer x:Name="HistoryScroll" Grid.Row="1"
+                              VerticalScrollBarVisibility="Auto">
+                    <TextBox x:Name="HistoryBox"
+                             Background="Transparent" BorderThickness="0"
+                             Foreground="#CDD6F4" IsReadOnly="True"
+                             TextWrapping="Wrap" Padding="5"
+                             FontSize="14" FontFamily="Consolas"/>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <TextBox x:Name="Display" Grid.Row="1"
+                 Text="0" Foreground="White" Background="#181825"
+                 BorderBrush="#89B4FA" BorderThickness="1"
+                 FontSize="36" TextAlignment="Right"
+                 VerticalContentAlignment="Center" Padding="10"
+                 GotFocus="Display_GotFocus"/>
+
+        <TabControl Grid.Row="2">
+
+            <TabItem Header="CALC">
+                <Grid Margin="0,10,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/><RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/><RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/><RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/><RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Content="x"    Grid.Row="0" Grid.Column="0" Click="Num_Click"            Theme="{StaticResource SciBtn}"/>
+                    <Button Content="y"    Grid.Row="0" Grid.Column="1" Click="Num_Click"            Theme="{StaticResource SciBtn}"/>
+                    <Button Content="z"    Grid.Row="0" Grid.Column="2" Click="Num_Click"            Theme="{StaticResource SciBtn}"/>
+                    <Button Content="π"    Grid.Row="0" Grid.Column="3" Click="Sci_Click" Tag="Pi"   Theme="{StaticResource SciBtn}"/>
+                    <Button Content="("    Grid.Row="1" Grid.Column="0" Click="Num_Click"            Theme="{StaticResource SciBtn}"/>
+                    <Button Content=")"    Grid.Row="1" Grid.Column="1" Click="Num_Click"            Theme="{StaticResource SciBtn}"/>
+                    <Button Content="sqrt" Grid.Row="1" Grid.Column="2" Click="Sci_Click" Tag="sqrt" Theme="{StaticResource SciBtn}"/>
+                    <Button Content="exp"  Grid.Row="1" Grid.Column="3" Click="Sci_Click" Tag="exp"  Theme="{StaticResource SciBtn}"/>
+                    <Button Content="sin"  Grid.Row="2" Grid.Column="0" Click="Sci_Click" Tag="sin"   Theme="{StaticResource SciBtn}"/>
+                    <Button Content="cos"  Grid.Row="2" Grid.Column="1" Click="Sci_Click" Tag="cos"   Theme="{StaticResource SciBtn}"/>
+                    <Button Content="tan"  Grid.Row="2" Grid.Column="2" Click="Sci_Click" Tag="tan"   Theme="{StaticResource SciBtn}"/>
+                    <Button Content="log"  Grid.Row="2" Grid.Column="3" Click="Sci_Click" Tag="log10" Theme="{StaticResource SciBtn}"/>
+                    <Button Content="C"   Grid.Row="3" Grid.Column="0" Click="Clear_Click"          Theme="{StaticResource OpsBtn}"/>
+                    <Button Content="⌫"   Grid.Row="3" Grid.Column="1" Click="Back_Click"           Theme="{StaticResource OpsBtn}"/>
+                    <Button Content="mod" Grid.Row="3" Grid.Column="2" Click="Op_Click"   Tag="%"   Theme="{StaticResource OpsBtn}"/>
+                    <Button Content="÷"   Grid.Row="3" Grid.Column="3" Click="Op_Click"   Tag="/"   Theme="{StaticResource OpsBtn}"/>
+                    <Button Content="7" Grid.Row="4" Grid.Column="0" Click="Num_Click" Theme="{StaticResource NumBtn}"/>
+                    <Button Content="8" Grid.Row="4" Grid.Column="1" Click="Num_Click" Theme="{StaticResource NumBtn}"/>
+                    <Button Content="9" Grid.Row="4" Grid.Column="2" Click="Num_Click" Theme="{StaticResource NumBtn}"/>
+                    <Button Content="×" Grid.Row="4" Grid.Column="3" Click="Op_Click" Tag="*" Theme="{StaticResource OpsBtn}"/>
+                    <Button Content="4" Grid.Row="5" Grid.Column="0" Click="Num_Click" Theme="{StaticResource NumBtn}"/>
+                    <Button Content="5" Grid.Row="5" Grid.Column="1" Click="Num_Click" Theme="{StaticResource NumBtn}"/>
+                    <Button Content="6" Grid.Row="5" Grid.Column="2" Click="Num_Click" Theme="{StaticResource NumBtn}"/>
+                    <Button Content="-" Grid.Row="5" Grid.Column="3" Click="Op_Click" Tag="-" Theme="{StaticResource OpsBtn}"/>
+                    <Button Content="1" Grid.Row="6" Grid.Column="0" Click="Num_Click" Theme="{StaticResource NumBtn}"/>
+                    <Button Content="2" Grid.Row="6" Grid.Column="1" Click="Num_Click" Theme="{StaticResource NumBtn}"/>
+                    <Button Content="3" Grid.Row="6" Grid.Column="2" Click="Num_Click" Theme="{StaticResource NumBtn}"/>
+                    <Button Content="+" Grid.Row="6" Grid.Column="3" Click="Op_Click" Tag="+" Theme="{StaticResource OpsBtn}"/>
+                    <Button Content="0" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Click="Num_Click" Theme="{StaticResource NumBtn}"/>
+                    <Button Content="." Grid.Row="7" Grid.Column="2" Click="Decimal_Click" Theme="{StaticResource NumBtn}"/>
+                    <Button Content="=" Grid.Row="7" Grid.Column="3" Click="Equal_Click"   Theme="{StaticResource EqBtn}"/>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="2D GRAPH">
+                <Grid>
+                    <Grid Margin="10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0" Margin="0,0,0,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="Enter an equation using x as the variable"
+                                               Foreground="#6C7086" FontSize="11" Margin="0,0,0,2"/>
+                                    <TextBlock Text="e.g.  sin(x)   |   x^2 - 3   |   exp(-x^2)"
+                                               Foreground="#6C7086" FontSize="11" Margin="0,0,0,6"/>
+                                </StackPanel>
+                                <Button Grid.Column="1" Content="? Help"
+                                        Click="ToggleHelp2D_Click"
+                                        Padding="8,4" Margin="5,0,0,0"
+                                        Theme="{StaticResource HelpBtn}"/>
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="EquationInput2D" Text="sin(x) * x"
+                                         Height="32" VerticalContentAlignment="Center"
+                                         Background="#313244" Foreground="White" BorderBrush="#89B4FA"/>
+                                <Button Grid.Column="1" Content="↺ Reset" Click="Reset2D_Click"
+                                        Margin="5,0,0,0" Padding="8,0" Height="32"
+                                        Theme="{StaticResource OpsBtn}" FontSize="12"/>
+                                <Button Grid.Column="2" Content="PLOT 2D" Click="Plot2D_Click"
+                                        Margin="5,0,0,0" Width="80" Height="32"
+                                        Theme="{StaticResource SciBtn}"/>
+                            </Grid>
+                        </StackPanel>
+                        <ScottPlot:AvaPlot x:Name="AvaPlot2D" Grid.Row="1"/>
+                    </Grid>
+                    <Border x:Name="Help2DOverlay" IsVisible="False" ZIndex="100"
+                            Background="#E6181825" CornerRadius="10" Margin="20" Padding="20"
+                            VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="380">
+                        <StackPanel>
+                            <TextBlock Text="2D GRAPH — HOW TO USE" Foreground="#89B4FA"
+                                       FontSize="14" FontWeight="Bold" Margin="0,0,0,12"/>
+                            <TextBlock Text="ENTERING EQUATIONS" Foreground="#6C7086"
+                                       FontSize="11" FontWeight="Bold" Margin="0,0,0,4"/>
+                            <TextBlock TextWrapping="Wrap" Foreground="#CDD6F4" FontSize="13" Margin="0,0,0,10">
+                                Use x as your variable. Operators: + - * / ^
+                                Functions: sin(x)  cos(x)  tan(x)  sqrt(x)  log(x)  ln(x)  exp(x)
+                                Constant: Pi
+                            </TextBlock>
+                            <TextBlock Text="NAVIGATING" Foreground="#6C7086"
+                                       FontSize="11" FontWeight="Bold" Margin="0,0,0,4"/>
+                            <TextBlock TextWrapping="Wrap" Foreground="#CDD6F4" FontSize="13" Margin="0,0,0,16">
+                                Scroll wheel — zoom     Left-click drag — pan
+                            </TextBlock>
+                            <Button Content="Close" Click="ToggleHelp2D_Click"
+                                    HorizontalAlignment="Center" Padding="20,6"
+                                    Theme="{StaticResource SciBtn}"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="3D GRAPH">
+                <Grid>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="0" Margin="10,10,10,4">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="Enter an equation using x and y as variables"
+                                               Foreground="#6C7086" FontSize="11" Margin="0,0,0,2"/>
+                                    <TextBlock Text="e.g.  sin(x)*cos(y)   |   x^2+y^2   |   sin(sqrt(x^2+y^2))"
+                                               Foreground="#6C7086" FontSize="11" Margin="0,0,0,4"/>
+                                </StackPanel>
+                                <Button Grid.Column="1" Content="? Help"
+                                        Click="ToggleHelp3D_Click"
+                                        Padding="8,4" Margin="5,0,0,0"
+                                        Theme="{StaticResource HelpBtn}"/>
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="EquationInput3D" Text="sin(x) * cos(y)"
+                                         Height="32" VerticalContentAlignment="Center"
+                                         Background="#313244" Foreground="White" BorderBrush="#89B4FA"/>
+                                <Button Grid.Column="1" Content="↺ Reset" Click="Reset3D_Click"
+                                        Margin="5,0,0,0" Padding="8,0" Height="32"
+                                        Theme="{StaticResource OpsBtn}" FontSize="12"/>
+                                <Button Grid.Column="2" Content="PLOT 3D" Click="Plot3D_Click"
+                                        Margin="5,0,0,0" Width="80" Height="32"
+                                        Theme="{StaticResource SciBtn}"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <Border Grid.Row="1" Background="#252535" CornerRadius="6"
+                                Margin="10,0,10,6" Padding="10,6">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="16"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Rotation (azimuth)" Classes="SliderLabel"/>
+                                        <TextBlock x:Name="AzimuthLabel" Grid.Column="1" Text="45°" Classes="SliderLabel"/>
+                                    </Grid>
+                                    <Slider x:Name="AzimuthSlider" Minimum="0" Maximum="360" Value="45"
+                                            ValueChanged="OnAzimuthChanged"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Elevation" Classes="SliderLabel"/>
+                                        <TextBlock x:Name="ElevationLabel" Grid.Column="1" Text="30°" Classes="SliderLabel"/>
+                                    </Grid>
+                                    <Slider x:Name="ElevationSlider" Minimum="5" Maximum="85" Value="30"
+                                            ValueChanged="OnElevationChanged"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <local:SurfacePlot3D x:Name="Plot3D"
+                                             Grid.Row="2"
+                                             Margin="10,0,10,10"/>
+                    </Grid>
+
+                    <Border x:Name="Help3DOverlay" IsVisible="False" ZIndex="100"
+                            Background="#E6181825" CornerRadius="10" Margin="20" Padding="20"
+                            VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="400">
+                        <StackPanel>
+                            <TextBlock Text="3D GRAPH — HOW TO USE" Foreground="#89B4FA"
+                                       FontSize="14" FontWeight="Bold" Margin="0,0,0,12"/>
+                            <TextBlock Text="ENTERING EQUATIONS" Foreground="#6C7086"
+                                       FontSize="11" FontWeight="Bold" Margin="0,0,0,4"/>
+                            <TextBlock TextWrapping="Wrap" Foreground="#CDD6F4" FontSize="13" Margin="0,0,0,10">
+                                Use x and y as variables. z = f(x, y) is rendered as a
+                                GPU-shaded surface with Phong lighting and z-based colouring.
+                            </TextBlock>
+                            <TextBlock Text="EXAMPLES" Foreground="#6C7086"
+                                       FontSize="11" FontWeight="Bold" Margin="0,0,0,4"/>
+                            <TextBlock TextWrapping="Wrap" Foreground="#CDD6F4"
+                                       FontSize="13" FontFamily="Consolas" Margin="0,0,0,10">
+  sin(x) * cos(y)
+  x^2 + y^2
+  sin(sqrt(x^2 + y^2))
+  exp(-(x^2+y^2)/3) * sin(x)
+                            </TextBlock>
+                            <TextBlock Text="CONTROLS" Foreground="#6C7086"
+                                       FontSize="11" FontWeight="Bold" Margin="0,0,0,4"/>
+                            <TextBlock TextWrapping="Wrap" Foreground="#CDD6F4" FontSize="13" Margin="0,0,0,16">
+                                Rotation slider — horizontal orbit (0°–360°)
+                                Elevation slider — vertical tilt (5°–85°)
+                                Right-click drag — rotate freely with mouse
+                                Scroll wheel — zoom
+                                Double-click — reset zoom
+                            </TextBlock>
+                            <Button Content="Close" Click="ToggleHelp3D_Click"
+                                    HorizontalAlignment="Center" Padding="20,6"
+                                    Theme="{StaticResource SciBtn}"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</Window>
