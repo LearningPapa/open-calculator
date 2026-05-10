@@ -1,6 +1,6 @@
 using Avalonia;
 
-namespace ScientificCalculator;
+namespace TIDestroyer9000;
 
 // Avalonia requires an explicit entry point — WPF generated this automatically.
 // This is the only new file you need to add.

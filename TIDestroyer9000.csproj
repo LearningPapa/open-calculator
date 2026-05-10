@@ -11,7 +11,7 @@
     <!-- Controls the output binary name. Without this it would be "TI DESTROYER 9000.exe"
          (with spaces) which makes shell commands a pain. AssemblyName overrides that. -->
     <AssemblyName>TIDestroyer9000</AssemblyName>
-    <RootNamespace>ScientificCalculator</RootNamespace>
+    <RootNamespace>TIDestroyer9000</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia"                  Version="11.2.3" />

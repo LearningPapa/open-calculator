@@ -3,7 +3,7 @@ using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
 using Silk.NET.OpenGL;
 
-namespace ScientificCalculator
+namespace TIDestroyer9000
 {
     public class SurfacePlot3D : OpenGlControlBase
     {

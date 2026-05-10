@@ -7,7 +7,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using ScottPlot;
 
-namespace ScientificCalculator
+namespace TIDestroyer9000
 {
     public partial class MainWindow : Avalonia.Controls.Window
     {
@@ -32,7 +32,7 @@ namespace ScientificCalculator
         {
             string baseDir = Environment.GetFolderPath(
                 Environment.SpecialFolder.ApplicationData);
-            string appDir  = Path.Combine(baseDir, "OpenCalculator");
+            string appDir  = Path.Combine(baseDir, "TIDestroyer9000");
             try
             {
                 Directory.CreateDirectory(appDir);
@@ -42,7 +42,7 @@ namespace ScientificCalculator
                 // If we can't create the standard folder for any reason
                 // (corp lockdown, weird sandbox, etc.), fall back to the user's
                 // home folder which is always writable.
-                Console.Error.WriteLine($"[OpenCalculator] Could not create {appDir}: {ex.Message}");
+                Console.Error.WriteLine($"[TIDestroyer9000] Could not create {appDir}: {ex.Message}");
                 appDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             }
             return Path.Combine(appDir, "history.txt");
@@ -92,7 +92,7 @@ namespace ScientificCalculator
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"[OpenCalculator] Could not load history: {ex.Message}");
+                Console.Error.WriteLine($"[TIDestroyer9000] Could not load history: {ex.Message}");
             }
         }
 
@@ -104,7 +104,7 @@ namespace ScientificCalculator
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"[OpenCalculator] Could not save history: {ex.Message}");
+                Console.Error.WriteLine($"[TIDestroyer9000] Could not save history: {ex.Message}");
             }
         }
 

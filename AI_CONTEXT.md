@@ -23,8 +23,6 @@ TI DESTROYER 9000/
 └── SurfacePlot3D.cs          # Custom GPU-accelerated 3D surface renderer (OpenGL via Silk.NET)
 ```
 
-**Important:** The C# namespace is still `ScientificCalculator` internally even though the public name is "TI DESTROYER 9000." This is intentional — renaming the namespace touches every code file and adds risk for zero user benefit. Only the assembly name (`AssemblyName` in csproj), window title, and external docs use the public name.
-
 ### Key technologies
 
 | Library | Version | Purpose | License |
@@ -80,11 +78,9 @@ NCalc evaluates with `x`, `y`, `z`, `Pi` as parameters. For 3D plotting, the for
 
 History is saved to the OS-standard user data folder (resolved via `Environment.SpecialFolder.ApplicationData`):
 
-- **Windows:** `%APPDATA%\OpenCalculator\history.txt`
-- **macOS:** `~/Library/Application Support/OpenCalculator/history.txt`
-- **Linux:** `~/.config/OpenCalculator/history.txt`
-
-The folder name is still `OpenCalculator` rather than `TIDestroyer9000` — this is a known cosmetic inconsistency from the rename. Updating it would orphan existing users' history. If migrating, copy old history file to new location before changing the path constant.
+- **Windows:** `%APPDATA%\TIDestroyer9000\history.txt`
+- **macOS:** `~/Library/Application Support/TIDestroyer9000/history.txt`
+- **Linux:** `~/.config/TIDestroyer9000/history.txt`
 
 ## How to ship a release
 
@@ -108,7 +104,6 @@ Upload these to a GitHub Release. Users download and run — no .NET install nee
 3. **`Tmds.DBus.Protocol`** must be pinned to ≥0.21.0 to avoid GHSA-xrw6-gwf8-vvr9. The csproj already does this.
 4. **`AllowUnsafeBlocks`** must be `true` in the csproj because Silk.NET uses pointer offsets in `VertexAttribPointer` and `DrawElements`.
 5. **`x:Name="Plot3D"`** in MainWindow.axaml is intentionally different from the class name `SurfacePlot3D` to avoid generated-code-behind name ambiguity.
-6. **Internal namespace is `ScientificCalculator`** despite the public rename — this is intentional, not a bug.
 
 ## When making changes
 
