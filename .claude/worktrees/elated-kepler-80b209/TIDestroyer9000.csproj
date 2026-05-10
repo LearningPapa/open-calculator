@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!-- Controls the output binary name. Without this it would be "TI DESTROYER 9000.exe"
+         (with spaces) which makes shell commands a pain. AssemblyName overrides that. -->
+    <AssemblyName>TIDestroyer9000</AssemblyName>
+    <RootNamespace>ScientificCalculator</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia"                  Version="11.2.3" />
+    <PackageReference Include="Avalonia.Desktop"          Version="11.2.3" />
+    <PackageReference Include="Avalonia.Themes.Fluent"    Version="11.2.3" />
+    <PackageReference Include="ScottPlot.Avalonia"        Version="5.0.53" />
+    <PackageReference Include="NCalcSync"                 Version="5.2.0" />
+    <PackageReference Include="Silk.NET.OpenGL"           Version="2.23.0" />
+    <PackageReference Include="Tmds.DBus.Protocol"        Version="0.21.0" />
+  </ItemGroup>
+</Project>
