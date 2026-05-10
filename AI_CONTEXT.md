@@ -49,7 +49,7 @@ This started as a WPF app and was migrated to Avalonia for cross-platform suppor
 - **Mesh**: built CPU-side once per PLOT 3D click. 60×60 grid → 7,200 triangles, interleaved float buffer `[x,y,z, nx,ny,nz]` per vertex with normals computed via central differences for smooth shading.
 - **Upload**: mesh goes into a GPU VBO + EBO via `BufferData(DynamicDraw)`. Once per formula change.
 - **Rotation**: only the MVP matrix uniform (16 floats) is updated. The mesh is never re-uploaded for view changes. This is why rotation is GPU-smooth.
-- **Shaders**: GLSL `#version 150` — desktop OpenGL 3.2 core profile. This is the lowest common denominator that works on Windows ANGLE, Linux Mesa, and macOS Apple OpenGL. We initially used `#version 300 es` but macOS doesn't support GLES.
+- **Shaders**: The shader bodies are identical across platforms. The version header is chosen at runtime by inspecting `GL_VERSION`: if it contains `"OpenGL ES"` (Windows ANGLE in GLES mode, Linux GLES) we prefix `#version 300 es\nprecision highp float;`; otherwise (macOS desktop GL, Linux desktop Mesa) we prefix `#version 150`. macOS requires desktop GL because Apple never shipped GLES on the desktop; Windows ANGLE typically runs in GLES mode.
 - **Depth buffer**: Avalonia's framebuffer has no depth attachment by default. We allocate our own depth renderbuffer and attach it on first render. **Without this, depth testing silently produces a blank screen** — significant bug to track down.
 - **Camera**: orbit camera around the surface centre, parameterized by azimuth (0–360°), elevation (5–85°), and zoom (camera distance multiplier 0.2–5.0).
 
@@ -100,10 +100,11 @@ Upload these to a GitHub Release. Users download and run — no .NET install nee
 ## Known limitations and gotchas
 
 1. **WSLg does not work for the 3D renderer.** WSLg's graphics stack doesn't expose a usable OpenGL context to Avalonia's compositor. Develop in WSL but run in PowerShell on Windows, or use a real Linux distro.
-2. **Window title bar font** may render blank on first run on some Linux systems if `fonts-dejavu` and `fontconfig` are not installed: `sudo apt-get install -y libfontconfig1 fonts-dejavu fonts-liberation`.
-3. **`Tmds.DBus.Protocol`** must be pinned to ≥0.21.0 to avoid GHSA-xrw6-gwf8-vvr9. The csproj already does this.
-4. **`AllowUnsafeBlocks`** must be `true` in the csproj because Silk.NET uses pointer offsets in `VertexAttribPointer` and `DrawElements`.
-5. **`x:Name="Plot3D"`** in MainWindow.axaml is intentionally different from the class name `SurfacePlot3D` to avoid generated-code-behind name ambiguity.
+2. **`OnOpenGlInit` can fire more than once** (e.g. after a resize or compositor event). `SurfacePlot3D` handles this by resetting `_depthW`/`_depthH` to 0 and `_indexCount` to 0 at the end of every init, and setting `_meshDirty = true` if vertex data exists, so the depth RBO and mesh are always re-uploaded to the new context.
+3. **Window title bar font** may render blank on first run on some Linux systems if `fonts-dejavu` and `fontconfig` are not installed: `sudo apt-get install -y libfontconfig1 fonts-dejavu fonts-liberation`.
+4. **`Tmds.DBus.Protocol`** must be pinned to ≥0.21.0 to avoid GHSA-xrw6-gwf8-vvr9. The csproj already does this.
+5. **`AllowUnsafeBlocks`** must be `true` in the csproj because Silk.NET uses pointer offsets in `VertexAttribPointer` and `DrawElements`.
+6. **`x:Name="Plot3D"`** in MainWindow.axaml is intentionally different from the class name `SurfacePlot3D` to avoid generated-code-behind name ambiguity.
 
 ## When making changes
 

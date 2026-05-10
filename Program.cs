@@ -12,6 +12,6 @@ class Program
 
     public static AppBuilder BuildAvaloniaApp() =>
         AppBuilder.Configure<App>()
-            .UsePlatformDetect()   // auto-selects Windows/Linux/macOS renderer
+            .UsePlatformDetect()
             .LogToTrace();
 }

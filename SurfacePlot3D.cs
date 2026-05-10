@@ -35,27 +35,17 @@ namespace TIDestroyer9000
 
         // ── Shaders ───────────────────────────────────────────────────────────
         //
-        // GLSL 1.50 (#version 150) targets desktop OpenGL 3.2 core profile.
-        // This is the lowest common denominator that works across:
-        //   - Windows: ANGLE translates GL → Direct3D
-        //   - Linux:   Mesa native
-        //   - macOS:   Apple's deprecated-but-still-present OpenGL 4.1 stack
+        // Avalonia can give us either a desktop GL or an OpenGL ES context
+        // depending on platform and driver:
+        //   - Windows ANGLE (GLES mode): needs "#version 300 es" + "precision highp float;"
+        //   - macOS (desktop GL):        needs "#version 150"  — Apple never shipped GLES desktop
+        //   - Linux Mesa:                accepts either
         //
-        // We previously used #version 300 es (GLES 3.0) which works on Windows
-        // (via ANGLE's GLES path) and Linux but NOT macOS — Apple never shipped
-        // OpenGL ES on the desktop.
-        //
-        // Differences vs the GLES variant:
-        //   - No "precision highp float;" (GLES-only directive)
-        //   - in/out semantics are otherwise identical
-        //   - User-defined fragment outputs require #version 130+, we have 150
-        //
-        // Attribute locations are still bound via glBindAttribLocation before
-        // linking (see OnOpenGlInit) which works in 1.50. We avoid layout(location=N)
-        // because that requires GLSL 330+.
+        // We detect which context we have at init time by inspecting GL_VERSION,
+        // then prefix the same shader body with the appropriate header.
+        // Attribute locations are bound via glBindAttribLocation (works in both).
 
-        private const string VertSrc = @"#version 150
-
+        private const string VertBody = @"
 in vec3 aPosition;
 in vec3 aNormal;
 
@@ -72,8 +62,7 @@ void main()
 }
 ";
 
-        private const string FragSrc = @"#version 150
-
+        private const string FragBody = @"
 in  vec3  vNormal;
 in  float vZ;
 
@@ -155,8 +144,14 @@ void main()
             {
                 _gl = GL.GetApi(gl.GetProcAddress);
 
-                uint vert = Compile(_gl, GLEnum.VertexShader,   VertSrc);
-                uint frag = Compile(_gl, GLEnum.FragmentShader, FragSrc);
+                bool isGles = gl.Version?.Contains("OpenGL ES") == true;
+                string header = isGles
+                    ? "#version 300 es\nprecision highp float;\n"
+                    : "#version 150\n";
+                Console.Error.WriteLine($"[SurfacePlot3D] GL Version: {gl.Version} → using {(isGles ? "GLES 300 es" : "desktop 150")}");
+
+                uint vert = Compile(_gl, GLEnum.VertexShader,   header + VertBody);
+                uint frag = Compile(_gl, GLEnum.FragmentShader, header + FragBody);
 
                 _program = _gl.CreateProgram();
                 _gl.AttachShader(_program, vert);
@@ -189,6 +184,10 @@ void main()
                 _gl.BindVertexArray(0);
 
                 _depthRBO = _gl.GenRenderbuffer();
+                _depthW   = 0; _depthH = 0; // force depth RBO to be attached on first render of this context
+                _indexCount = 0;             // new context: GPU has no mesh yet
+                if (_pendingVerts != null)
+                    _meshDirty = true;       // re-upload mesh data to this context on next render
             }
             catch (Exception ex)
             {

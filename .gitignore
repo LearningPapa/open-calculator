@@ -13,6 +13,7 @@ publish/
 
 # Runtime artifacts
 history.txt
+*.log
 
 # OS junk
 .DS_Store
