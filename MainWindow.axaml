@@ -3,7 +3,7 @@
         xmlns:ScottPlot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
         xmlns:local="clr-namespace:ScientificCalculator"
         x:Class="ScientificCalculator.MainWindow"
-        Title="Open Calculator"
+        Title="TI DESTROYER 9000"
         Width="480" Height="900"
         CanResize="True"
         Background="#1E1E2E">

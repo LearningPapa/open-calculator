@@ -1,17 +1,12 @@
 # ─────────────────────────────────────────────────────────────────
-#  Open Calculator — Cross-platform publish script (PowerShell)
-# ─────────────────────────────────────────────────────────────────
-#  Produces self-contained single-file binaries for:
-#    win-x64, linux-x64, osx-x64, osx-arm64
-#  Output: ./publish/<platform>/OpenCalculator(.exe)
+#  TI DESTROYER 9000 — Cross-platform publish script (PowerShell)
 # ─────────────────────────────────────────────────────────────────
 
 $ErrorActionPreference = "Stop"
 
-$Project = "Open Calculator.csproj"
+$Project = "TIDestroyer9000.csproj"
 $Out     = "./publish"
 
-# Platforms to build — comment any out to skip
 $Targets = @(
     @{ rid = "win-x64";   ext = ".exe" },
     @{ rid = "linux-x64"; ext = ""     },
@@ -19,7 +14,6 @@ $Targets = @(
     @{ rid = "osx-arm64"; ext = ""     }
 )
 
-# Clean previous output
 if (Test-Path $Out) { Remove-Item -Recurse -Force $Out }
 New-Item -ItemType Directory -Path $Out | Out-Null
 
@@ -40,13 +34,10 @@ foreach ($t in $Targets) {
         -p:EnableCompressionInSingleFile=true `
         -o "$Out/$rid"
 
-    # Rename the binary to a friendly name
-    $oldName = "$Out/$rid/Open Calculator$ext"
-    $newName = "$Out/OpenCalculator-$rid$ext"
+    $oldName = "$Out/$rid/TIDestroyer9000$ext"
+    $newName = "$Out/TIDestroyer9000-$rid$ext"
     if (Test-Path $oldName) {
         Move-Item $oldName $newName
-        # Remove the now-empty per-platform folder (single-file = no leftover deps)
-        # Note: a couple of small native libs may remain on Linux/macOS — that's normal
         Get-ChildItem "$Out/$rid" | Remove-Item -Force
         Remove-Item "$Out/$rid"
     }

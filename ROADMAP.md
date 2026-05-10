@@ -1,4 +1,4 @@
-# Open Calculator Roadmap
+# TI DESTROYER 9000 Roadmap
 
 A living document of planned features and improvements. Items are loosely ordered by priority but subject to change. Contributions welcome — see [`AI_CONTEXT.md`](AI_CONTEXT.md) for an architectural overview.
 
@@ -49,7 +49,7 @@ Add a quality slider (low/medium/high) to choose 30×30, 60×60, or 120×120 mes
 - *Files affected:* `MainWindow.axaml`, `MainWindow.axaml.cs`
 
 ### Code signing for binaries
-Get a code signing certificate so Windows SmartScreen and macOS Gatekeeper stop warning users on first run. ~$100–500/year per platform — currently not justified for a free project, but worth revisiting if the user base grows.
+Get a code signing certificate so Windows SmartScreen and macOS Gatekeeper stop warning users on first run. ~$100–500/year per platform — currently not justified.
 - *Effort:* logistical, not technical
 
 ### CI/CD with GitHub Actions
@@ -60,24 +60,22 @@ Automate the cross-platform build on every release tag. Push a `vX.Y.Z` tag → 
 ## Long-term (major undertakings)
 
 ### Android version
-Avalonia 11 supports Android targets, so the calculator and 2D graph should port cleanly. The 3D renderer is the wildcard — Android uses GLES 3.0 directly (no ANGLE), and the existing shaders should work, but mesh upload and the `OpenGlControlBase` lifecycle behave differently. Likely needs:
-- New `Open Calculator.Android` project alongside the desktop one
-- Touch-friendly UI scaling and larger button sizes
-- Replace right-click drag with two-finger drag for 3D rotation
-- Replace scroll wheel zoom with pinch-to-zoom
-- Test 3D rendering on actual hardware (emulators have limited GPU support)
+Avalonia 11 supports Android targets. Calculator and 2D graph should port cleanly. The 3D renderer is the wildcard — Android uses GLES 3.0 directly. Likely needs:
+- New Android project alongside the desktop one
+- Touch-friendly UI scaling
+- Two-finger drag for 3D rotation, pinch-to-zoom
+- Test on actual hardware (emulators have limited GPU support)
 - *Effort:* large
 
 ### iOS version
-Avalonia 11 also supports iOS via Metal. iOS doesn't expose OpenGL anymore — Apple deprecated it years ago. The 3D renderer would need a Metal shader port, or the Silk.NET layer would need to translate. Realistic options:
+Avalonia 11 supports iOS via Metal. iOS doesn't expose OpenGL — Apple deprecated it. Options:
 - Port shaders to MSL (Metal Shading Language)
-- Use a higher-level Avalonia 3D abstraction if one emerges
-- Build using ANGLE for iOS (translates GLES → Metal under the hood)
-- Apple Developer membership ($99/year) required to distribute via App Store
-- *Effort:* large, with platform-specific licensing overhead
+- Use ANGLE for iOS (translates GLES → Metal)
+- Apple Developer membership ($99/year) required for App Store
+- *Effort:* large
 
 ### WebAssembly version (browser)
-Avalonia supports WASM. The calculator and 2D graph should work; the 3D renderer would need a WebGL2 path (close to GLES 3.0 — much of the shader code should port directly). Would let people use the calculator from any browser without installing anything.
+Avalonia supports WASM. Calculator and 2D graph should work; the 3D renderer would need a WebGL2 path (close to GLES 3.0 — much of the shader code should port directly).
 - *Effort:* medium-large
 
 ### Plugin/extension system
@@ -86,15 +84,13 @@ Let advanced users define custom functions, unit conversions, or graph types via
 
 ## Ideas under consideration
 
-Not yet committed to but worth thinking about:
-
 - Light/dark theme toggle (currently dark only)
-- Keyboard shortcuts overlay (help screen showing all hotkeys)
-- Equation graphing animations (slider for a parameter, watch the curve change)
-- Statistical functions and basic data plotting (mean, median, regression lines)
+- Keyboard shortcuts overlay
+- Animation slider for parameterized equations
+- Statistical functions and basic data plotting
 - Matrix calculator tab
 - Complex number support
-- Localization (currently English only)
+- Localization
 
 ## Want to contribute?
 

@@ -1,15 +1,11 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────
-#  Open Calculator — Cross-platform publish script (bash)
-# ─────────────────────────────────────────────────────────────────
-#  Produces self-contained single-file binaries for:
-#    win-x64, linux-x64, osx-x64, osx-arm64
-#  Output: ./publish/OpenCalculator-<platform>(.exe)
+#  TI DESTROYER 9000 — Cross-platform publish script (bash)
 # ─────────────────────────────────────────────────────────────────
 
 set -e
 
-PROJECT="Open Calculator.csproj"
+PROJECT="TIDestroyer9000.csproj"
 OUT="./publish"
 
 declare -a TARGETS=(
@@ -19,9 +15,16 @@ declare -a TARGETS=(
     "osx-arm64:"
 )
 
-# Clean previous output
 rm -rf "$OUT"
 mkdir -p "$OUT"
+
+# Unlock keychain for codesigning on macOS, if a Developer ID cert is configured.
+# Skipped silently if you don't have signing set up yet.
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    if security find-identity -v -p codesigning 2>/dev/null | grep -q "Developer ID"; then
+        security unlock-keychain ~/Library/Keychains/login.keychain-db
+    fi
+fi
 
 for entry in "${TARGETS[@]}"; do
     rid="${entry%%:*}"
@@ -41,9 +44,8 @@ for entry in "${TARGETS[@]}"; do
         -p:EnableCompressionInSingleFile=true \
         -o "$OUT/$rid"
 
-    # Rename binary to a friendly name and clean up the folder
-    old="$OUT/$rid/Open Calculator$ext"
-    new="$OUT/OpenCalculator-$rid$ext"
+    old="$OUT/$rid/TIDestroyer9000$ext"
+    new="$OUT/TIDestroyer9000-$rid$ext"
     if [ -f "$old" ]; then
         mv "$old" "$new"
         rm -rf "$OUT/$rid"
