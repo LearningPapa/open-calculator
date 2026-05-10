@@ -102,7 +102,7 @@ Upload these to a GitHub Release. Users download and run — no .NET install nee
 1. **WSLg does not work for the 3D renderer.** WSLg's graphics stack doesn't expose a usable OpenGL context to Avalonia's compositor. Develop in WSL but run in PowerShell on Windows, or use a real Linux distro.
 2. **`OnOpenGlInit` can fire more than once** (e.g. after a resize or compositor event). `SurfacePlot3D` handles this by resetting `_depthW`/`_depthH` to 0 and `_indexCount` to 0 at the end of every init, and setting `_meshDirty = true` if vertex data exists, so the depth RBO and mesh are always re-uploaded to the new context.
 3. **Window title bar font** may render blank on first run on some Linux systems if `fonts-dejavu` and `fontconfig` are not installed: `sudo apt-get install -y libfontconfig1 fonts-dejavu fonts-liberation`.
-4. **`Tmds.DBus.Protocol`** must be pinned to ≥0.21.0 to avoid GHSA-xrw6-gwf8-vvr9. The csproj already does this.
+4. **`Tmds.DBus.Protocol`** must be pinned to 0.21.3 or ≥0.92.0 to avoid GHSA-xrw6-gwf8-vvr9 (versions <0.21.3 and 0.22.0–0.92.0 are all vulnerable). The csproj pins it to 0.21.3.
 5. **`AllowUnsafeBlocks`** must be `true` in the csproj because Silk.NET uses pointer offsets in `VertexAttribPointer` and `DrawElements`.
 6. **`x:Name="Plot3D"`** in MainWindow.axaml is intentionally different from the class name `SurfacePlot3D` to avoid generated-code-behind name ambiguity.
 
