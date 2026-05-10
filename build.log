@@ -1,0 +1,14 @@
+  Determining projects to restore...
+/mnt/c/Users/david/Documents/Code Projects/TI-Destroyer-9000/TIDestroyer9000.csproj : warning NU1903: Package 'Tmds.DBus.Protocol' 0.21.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-xrw6-gwf8-vvr9
+  Restored /mnt/c/Users/david/Documents/Code Projects/TI-Destroyer-9000/TIDestroyer9000.csproj (in 995 ms).
+/mnt/c/Users/david/Documents/Code Projects/TI-Destroyer-9000/TIDestroyer9000.csproj : warning NU1903: Package 'Tmds.DBus.Protocol' 0.21.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-xrw6-gwf8-vvr9
+  TIDestroyer9000 -> /mnt/c/Users/david/Documents/Code Projects/TI-Destroyer-9000/bin/Debug/net10.0/TIDestroyer9000.dll
+
+Build succeeded.
+
+/mnt/c/Users/david/Documents/Code Projects/TI-Destroyer-9000/TIDestroyer9000.csproj : warning NU1903: Package 'Tmds.DBus.Protocol' 0.21.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-xrw6-gwf8-vvr9
+/mnt/c/Users/david/Documents/Code Projects/TI-Destroyer-9000/TIDestroyer9000.csproj : warning NU1903: Package 'Tmds.DBus.Protocol' 0.21.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-xrw6-gwf8-vvr9
+    2 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:06.34
